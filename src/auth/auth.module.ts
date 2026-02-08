@@ -4,7 +4,7 @@ import { AuthService } from './auth.service.js';
 import { AuthController } from './auth.controller.js';
 import { MailsModule } from '../mails/mails.module.js';
 
-import { JwtStrategy } from './jwt.strategy.js';
+import { JwtStrategy } from '../jwt/jwt.strategy.js';
 
 @Module({
   imports: [
