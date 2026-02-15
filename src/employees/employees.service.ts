@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateEmployeeDto } from './dto/create-employee.dto.js';
 import { UpdateEmployeeDto } from './dto/update-employee.dto.js';
-import { PrismaService } from 'src/prisma.service.js';
+import { PrismaService } from '../prisma.service.js';
 import { NotFoundError } from 'rxjs';
 
 @Injectable()

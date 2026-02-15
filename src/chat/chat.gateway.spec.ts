@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ChatGateway } from './chat.gateway.js';
+import { ChatGateway } from './gateway/chat.gateway.js';
 import { ChatService } from './chat.service.js';
 
 describe('ChatGateway', () => {
@@ -10,6 +10,7 @@ describe('ChatGateway', () => {
       providers: [ChatGateway, ChatService],
     }).compile();
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
     gateway = module.get<ChatGateway>(ChatGateway);
   });
 

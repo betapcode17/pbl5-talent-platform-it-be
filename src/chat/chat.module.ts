@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ChatService } from './chat.service.js';
-import { EventGateway } from './event/event.gateway.js';
+import { ChatGateway } from './gateway/chat.gateway.js';
 import { JwtModule } from '@nestjs/jwt';
 import { ChatController } from './chat.controller.js';
 
@@ -14,7 +14,7 @@ import { ChatController } from './chat.controller.js';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [ChatService, EventGateway],
+  providers: [ChatService, ChatGateway],
   controllers: [ChatController],
 })
 export class ChatModule {}

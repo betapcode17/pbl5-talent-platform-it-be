@@ -6,12 +6,19 @@ import {
   ParseIntPipe,
   Post,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard.js';
+import { JwtAuthGuard } from '../jwt/jwt-auth.guard.js';
 import { ChatService } from './chat.service.js';
 import { CreateChatDto } from './dto/create-chat.dto.js';
-import { ReqUser } from 'src/common/decorators/req-user.decorator.js';
+import { ReqUser } from '../common/decorators/req-user.decorator.js';
+
+interface IUserPayload {
+  user_id: number;
+  role: 'SEEKER' | 'EMPLOYEE' | 'ADMIN';
+  seeker_id?: number;
+}
 
 @ApiTags('chat')
 @ApiBearerAuth()
@@ -21,26 +28,36 @@ export class ChatController {
   constructor(private chatService: ChatService) {}
 
   @Post()
-  create(@ReqUser() user, @Body() dto: CreateChatDto) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  async create(@ReqUser() user: IUserPayload, @Body() dto: CreateChatDto) {
     if (user.role === 'SEEKER') {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      if (!user.seeker_id) {
+        throw new BadRequestException('Seeker ID không tồn tại');
+      }
       dto.seeker_id = user.seeker_id;
+    } else if (user.role !== 'EMPLOYEE') {
+      throw new BadRequestException(
+        'Chỉ seeker hoặc employee mới có thể tạo chat',
+      );
     }
     return this.chatService.CreateChat(dto);
   }
 
   @Get(':id')
-  getChatDetail(@ReqUser() user, @Param('id', ParseIntPipe) chatId: number) {
-    return this.chatService.getChatDetail(chatId);
+  async getChatDetail(
+    @ReqUser() user: IUserPayload,
+    @Param('id', ParseIntPipe) chatId: number,
+  ) {
+    return this.chatService.getChatDetail(chatId, user.user_id, user.role);
   }
+
   @Get('me')
-  getMyChat(@ReqUser() user) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  async getMyChat(@ReqUser() user: IUserPayload) {
     if (user.role !== 'SEEKER') {
       return [];
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    return this.chatService.getAllChatOfSeeker(+user.seeker_id);
+    if (!user.seeker_id) {
+      throw new BadRequestException('Seeker ID không tồn tại');
+    }
+    return this.chatService.getAllChatOfSeeker(user.seeker_id);
   }
 }
