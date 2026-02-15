@@ -1,7 +1,14 @@
-import { IsInt } from 'class-validator';
+import { IsInt, Min } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
 export class CreateChatDto {
-  @IsInt()
+  @ApiProperty({ example: 1, description: 'ID của người tìm kiếm việc' })
+  @IsInt({ message: 'seeker_id phải là số nguyên' })
+  @Min(1, { message: 'seeker_id phải lớn hơn 0' })
   seeker_id: number;
-  @IsInt()
+
+  @ApiProperty({ example: 1, description: 'ID của công ty' })
+  @IsInt({ message: 'company_id phải là số nguyên' })
+  @Min(1, { message: 'company_id phải lớn hơn 0' })
   company_id: number;
 }
